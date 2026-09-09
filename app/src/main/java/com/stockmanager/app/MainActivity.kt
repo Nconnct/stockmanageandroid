@@ -2,7 +2,7 @@ package com.stockmanager.app
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -21,19 +21,24 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        val navController = findNavController(R.id.nav_host_fragment)
 
-        // The 5 bottom-nav screens are "top level" — no back arrow, no Up navigation.
-        // Settings (reached from the toolbar menu) gets a back arrow automatically.
+        // Get the NavController directly from the NavHostFragment.
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                    as NavHostFragment
+
+        val navController = navHostFragment.navController
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.dashboardFragment,
                 R.id.productsFragment,
                 R.id.stockFragment,
                 R.id.historyFragment,
-                R.id.reportsFragment,
+                R.id.reportsFragment
             )
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNav.setupWithNavController(navController)
     }
@@ -45,13 +50,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         if (item.itemId == R.id.action_settings) {
-            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                        as NavHostFragment
+
+            navHostFragment.navController.navigate(R.id.settingsFragment)
+
             return true
         }
+
         return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-    val navController = findNavController(R.id.nav_host_fragment)
-    return navController.navigateUp() || super.onSupportNavigateUp()
-    } }
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                    as NavHostFragment
+
+        return navHostFragment.navController.navigateUp() ||
+                super.onSupportNavigateUp()
+    }
+}
